@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raymund's Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0c0c0c;
+      --bg-card: #161616;
+      --bg-card-hover: #1c1c1c;
+      --text: #e8e4df;
+      --text-muted: #807b74;
+      --accent: #c9f06b;
+      --border: #2a2a2a;
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Grain overlay ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    /* ── Reveal animations ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(12, 12, 12, 0.7);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-bottom-color: var(--border); }
+
+    .logo {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--text);
+      transition: all 0.3s;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 40px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    .hero h1 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      max-width: 900px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      margin-top: 32px;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .hero-cta {
+      margin-top: 48px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hero-cta a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s;
+      letter-spacing: 0.02em;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0c0c0c;
+    }
+    .btn-primary:hover { background: #d8f98a; transform: translateY(-1px); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--text-muted); }
+
+    .scroll-hint {
+      margin-top: auto;
+      padding-top: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 40px;
+      height: 1px;
+      background: var(--text-muted);
+    }
+
+    /* ── Section headings ── */
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 100px 40px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 64px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    .section-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Project cards ── */
+    .projects-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .project-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: background 0.4s, border-color 0.4s;
+    }
+    .project-card:hover {
+      background: var(--bg-card-hover);
+      border-color: #333;
+    }
+
+    .project-media {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      background: #111;
+    }
+    .project-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .project-card:hover .project-media img { transform: scale(1.03); }
+
+    /* SEMA tabbed media */
+    .project-media.tabbed img {
+      display: none;
+    }
+    .project-media.tabbed img.active {
+      display: block;
+    }
+
+    .media-tabs {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+    }
+    .media-tab {
+      padding: 6px 16px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 100px;
+      background: rgba(12,12,12,0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .media-tab:hover { border-color: rgba(255,255,255,0.4); color: var(--text); }
+    .media-tab.active {
+      background: var(--accent);
+      color: #0c0c0c;
+      border-color: var(--accent);
+    }
+
+    .project-info {
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .project-index {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .project-name {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .project-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      padding: 5px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* Alternate layout for odd cards */
+    .project-card.reverse { direction: rtl; }
+    .project-card.reverse > * { direction: ltr; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 60px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── Mobile overlay nav ── */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99;
+      background: rgba(12, 12, 12, 0.95);
+      backdrop-filter: blur(20px);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .mobile-nav.open { opacity: 1; pointer-events: all; }
+    .mobile-nav a {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .mobile-nav a:hover { color: var(--accent); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .project-card {
+        grid-template-columns: 1fr;
+      }
+      .project-card.reverse { direction: ltr; }
+      .project-media { aspect-ratio: 16 / 9; }
+      .project-info { padding: 28px; }
+    }
+
+    @media (max-width: 680px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .mobile-nav { display: flex; }
+
+      .hero { padding: 100px 24px 60px; }
+      .section { padding: 60px 24px; }
+      footer { padding: 40px 24px; }
+
+      .hero-desc { font-size: 0.95rem; }
+      .scroll-hint { display: none; }
+
+      .project-info { padding: 24px; }
+      .project-name { font-size: 1.3rem; }
+      .project-desc { font-size: 0.85rem; }
+
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav id="navbar">
+    <a href="#" class="logo">Raymund's Portfolio</a>
+    <div class="nav-links">
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile nav overlay -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#projects" onclick="toggleMenu()">Projects</a>
+    <a href="#contact" onclick="toggleMenu()">Contact</a>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="reveal">
+      <p class="hero-label">Developer &amp; Builder</p>
+      <h1>I build tools that solve <em>real</em> problems</h1>
+      <p class="hero-desc">
+        From browser extensions to full-stack WordPress systems — I focus on practical solutions that automate, scale, and deliver results.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn-primary">
+          View projects
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+        </a>
+        <a href="#contact" class="btn-ghost">Get in touch</a>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <span class="scroll-line"></span>
+      Scroll to explore
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="section" id="projects">
+    <div class="section-header reveal">
+      <h2 class="section-title">Recent Works</h2>
+      <span class="section-count">05 projects</span>
+    </div>
+
+    <div class="projects-grid">
+
+      <!-- 1 · SEMA -->
+      <article class="project-card reveal">
+        <div class="project-media tabbed" id="semaMedia">
+          <img src="assets/frontend.gif" alt="SEMA frontend — shop multi-facet filtering" loading="lazy" class="active" data-tab="frontend">
+          <img src="assets/backend.gif" alt="SEMA backend — WordPress dashboard settings" loading="lazy" data-tab="backend">
+          <div class="media-tabs">
+            <button class="media-tab active" onclick="switchSema('frontend')">Frontend</button>
+            <button class="media-tab" onclick="switchSema('backend')">Dashboard</button>
+          </div>
+        </div>
+        <div class="project-info">
+          <span class="project-index">01</span>
+          <h3 class="project-name">SEMA Automotive Parts Catalog</h3>
+          <p class="project-desc">
+            A large-scale WordPress plugin powering 58,477 products across 41 brands. Features dedicated database tables for vehicle fitment, bidirectional facet filters, and multi-layer caching — integrated with WP Grid Builder, Bricks Builder, and Meta Box.
+          </p>
+          <div class="project-tags">
+            <span class="tag">WordPress</span>
+            <span class="tag">WooCommerce</span>
+            <span class="tag">Laravel</span>
+            <span class="tag">PHP</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2 · People Also Ask -->
+      <article class="project-card reverse reveal">
+        <div class="project-media">
+          <img src="assets/paa.gif" alt="People Also Ask demo" loading="lazy" style="object-position: right center;">
+        </div>
+        <div class="project-info">
+          <span class="project-index">02</span>
+          <h3 class="project-name">People Also Ask Extractor</h3>
+          <p class="project-desc">
+            A Chrome extension that scrapes Google's "People Also Ask" data directly in-browser — no proxies, no expensive third-party tools. Exports structured CSV with PAA title, parent PAA, description, URL title, and URL.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Chrome Extension</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">SEO</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3 · Google Map Scraper -->
+      <article class="project-card reveal">
+        <div class="project-media">
+          <img src="assets/google-map-scraper.gif" alt="Google Map Scraper demo" loading="lazy" style="object-position: left center;">
+        </div>
+        <div class="project-info">
+          <span class="project-index">03</span>
+          <h3 class="project-name">Google Map Scraper</h3>
+          <p class="project-desc">
+            Forked and enhanced an open-source Google Maps scraper originally written in Go. Using AI-assisted development, I resolved existing errors and extended the tool's functionality — with no prior Go experience.
+          </p>
+          <div class="project-tags">
+            <span class="tag">Go</span>
+            <span class="tag">Scraping</span>
+            <span class="tag">AI-Assisted</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4 · OpenAI Meets Metabox -->
+      <article class="project-card reverse reveal">
+        <div class="project-media">
+          <img src="assets/openai-meets-metabox.gif" alt="OpenAI Meets Metabox demo" loading="lazy" style="object-position: left center;">
+        </div>
+        <div class="project-info">
+          <span class="project-index">04</span>
+          <h3 class="project-name">OpenAI Meets Metabox</h3>
+          <p class="project-desc">
+            A WordPress plugin that generates AI-powered dynamic content via shortcode using the OpenAI API, with built-in caching to reduce API calls and speed up page loads.
+          </p>
+          <div class="project-tags">
+            <span class="tag">WordPress</span>
+            <span class="tag">OpenAI API</span>
+            <span class="tag">PHP</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5 · Text to Speech -->
+      <article class="project-card reveal">
+        <div class="project-media">
+          <img src="assets/text-to-speech.gif" alt="Text to Speech demo" loading="lazy">
+        </div>
+        <div class="project-info">
+          <span class="project-index">05</span>
+          <h3 class="project-name">Text to Speech</h3>
+          <p class="project-desc">
+            A lightweight WordPress plugin that converts text into speech using OpenAI's text-to-speech API — simple, fast, and ready to drop into any site.
+          </p>
+          <div class="project-tags">
+            <span class="tag">WordPress</span>
+            <span class="tag">OpenAI API</span>
+            <span class="tag">TTS</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Contact / Footer -->
+  <footer id="contact">
+    <div class="section-header reveal" style="margin-bottom: 0;">
+      <h2 class="section-title">Let's work together</h2>
+    </div>
+    <p class="reveal" style="color: var(--text-muted); margin-top: 16px; font-size: 0.95rem; max-width: 480px; font-weight: 300; line-height: 1.7;">
+      Have a project in mind or want to collaborate? I'd love to hear from you.
+    </p>
+    <div class="reveal" style="margin-top: 32px;">
+      <a href="mailto:dev.raymund@gmail.com" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 100px; font-size: 0.85rem; font-weight: 500; text-decoration: none; background: var(--accent); color: #0c0c0c;">
+        Say hello
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+      </a>
+    </div>
+    <div class="footer-inner reveal" style="margin-top: 80px;">
+      <span class="footer-copy">&copy; 2026 — All rights reserved</span>
+      <div class="footer-links">
+        <a href="https://github.com/raymundedgar">GitHub</a>
+        <a href="https://www.linkedin.com/in/raymund-edgar">LinkedIn</a>
+		<a href="https://www.upwork.com/freelancers/~01cd942f30aadd7e42">Upwork</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Scroll reveal ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── Nav scroll effect ──
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // ── SEMA tab switcher ──
+    function switchSema(tab) {
+      const media = document.getElementById('semaMedia');
+      media.querySelectorAll('img').forEach(img => {
+        img.classList.toggle('active', img.dataset.tab === tab);
+      });
+      media.querySelectorAll('.media-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase() === tab);
+      });
+    }
+
+    // ── Mobile menu ──
+    function toggleMenu() {
+      document.getElementById('mobileNav').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
